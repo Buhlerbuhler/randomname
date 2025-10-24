@@ -4,14 +4,11 @@ let names = [
   "Maninder","Serena","Laila","Eron","Connor","Kiel","Noah","Beckett","Zlata",
   "Zakhar","Acacia","Zack","Eileen","Joshua","Steve","Jordyn","Danika"
 ];
+let gentleExclusions = ["Eron","Emerson","Acacia","Maninder"];
 
-// Gentle exclusion list
-let gentleExclusions = ["Eron", "Emerson", "Acacia", "Maninder"];
-
-// State
 let pool = [...names];
 let gentleMode = false;
-let noRepeats = true;  // toggled by button (and N key)
+let noRepeats = true;
 
 const nameDisplay = document.getElementById("name-display");
 const resetBtn = document.getElementById("reset");
@@ -24,32 +21,24 @@ const gentleIndicator = document.getElementById("gentle-indicator");
 
 function animateFlip() {
   nameDisplay.classList.remove("flip");
-  // Force reflow so the animation can restart
-  // eslint-disable-next-line no-unused-expressions
-  nameDisplay.offsetWidth;
+  void nameDisplay.offsetWidth; // reflow
   nameDisplay.classList.add("flip");
 }
 
 function pick() {
-  // Base source (repeats vs bag)
   let base = noRepeats ? pool : names.slice();
-  // Apply gentle filter if needed
   if (gentleMode) base = base.filter(n => !gentleExclusions.includes(n));
 
-  if (!base.length) {
-    nameDisplay.textContent = "Reset to start again";
-    return;
-  }
+  if (!base.length) { nameDisplay.textContent = "Reset to start again"; return; }
 
   const i = Math.floor(Math.random() * base.length);
   const chosen = base[i];
   nameDisplay.textContent = chosen;
   animateFlip();
 
-  // Remove from bag only if no-repeats
   if (noRepeats) {
-    const realIndex = pool.indexOf(chosen);
-    if (realIndex !== -1) pool.splice(realIndex, 1);
+    const idx = pool.indexOf(chosen);
+    if (idx !== -1) pool.splice(idx,1);
   }
 }
 
@@ -74,22 +63,20 @@ function toggleNoRepeats() {
 }
 
 function saveLists() {
-  names = namesInput.value.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
-  gentleExclusions = gentleInput.value.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
-  reset();
-  editor.classList.add("hidden");
+  names = namesInput.value.split(/[\n,]/).map(s=>s.trim()).filter(Boolean);
+  gentleExclusions = gentleInput.value.split(/[\n,]/).map(s=>s.trim()).filter(Boolean);
+  reset(); editor.classList.add("hidden");
 }
 
-// Init UI
 applyNoRepeatsUI();
 
-// Events
-resetBtn.onclick = (e) => { e.stopPropagation(); reset(); };
-toggleRepeatsBtn.onclick = (e) => { e.stopPropagation(); toggleNoRepeats(); };
-saveBtn.onclick = (e) => { e.stopPropagation(); saveLists(); };
+// Event wiring
+resetBtn.addEventListener("click", e => { e.stopPropagation(); reset(); });
+toggleRepeatsBtn.addEventListener("click", e => { e.stopPropagation(); toggleNoRepeats(); });
+saveBtn.addEventListener("click", e => { e.stopPropagation(); saveLists(); });
 
 document.body.addEventListener("keydown", e => {
-  const isTyping = e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT";
+  const isTyping = ["TEXTAREA","INPUT"].includes(e.target.tagName);
   if (e.key === " " && !isTyping) { e.preventDefault(); pick(); }
   if (e.key.toLowerCase() === "e") {
     editor.classList.toggle("hidden");
@@ -103,12 +90,8 @@ document.body.addEventListener("keydown", e => {
   if (e.key.toLowerCase() === "r" && !isTyping) reset();
 });
 
-// Click anywhere to pick (ignore clicks on UI)
 document.body.addEventListener("click", e => {
-  const blocked =
-    editor.contains(e.target) ||
-    e.target === resetBtn ||
-    e.target === toggleRepeatsBtn ||
-    e.target === saveBtn;
+  const blocked = editor.contains(e.target) || e.target === resetBtn ||
+                  e.target === toggleRepeatsBtn || e.target === saveBtn;
   if (!blocked) pick();
 });
