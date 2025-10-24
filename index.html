@@ -1,32 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Random Name Picker</title>
+  <!-- CSS must be named exactly style.css and be in the same folder as this file -->
+  <link rel="stylesheet" href="style.css?v=2" />
+</head>
 <body>
-  <!-- Gentle Mode indicator -->
   <div id="gentle-indicator" aria-hidden="true">🕊️</div>
 
-  <!-- NEW: non-clickable top bar container -->
   <header id="topbar">
     <button id="toggle-repeats" aria-pressed="true" title="Toggle No-Repeats (N)">
       NO REPEATS
     </button>
   </header>
 
-  <!-- Clickable stage ONLY -->
   <main id="main">
     <div id="name-display">Click or press SPACE</div>
   </main>
 
-  <!-- Editor (E toggles) -->
   <section id="editor" class="hidden" aria-label="Editor">
     <h2>Class List</h2>
     <textarea id="names-input"></textarea>
     <h3>Gentle Exclusions (optional)</h3>
-    <textarea id="gentle-input"></textarea>
-    <button id="save">Save</button>
-  </section>
-
-  <!-- Non-clickable bottom bar -->
-  <footer>
-    <button id="reset">Reset</button>
-  </footer>
-
-  <script src="script.js"></script>
-</body>
+    <t
