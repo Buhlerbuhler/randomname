@@ -4,28 +4,33 @@ let names = [
   "MANINDER","SERENA","LAILA","ERON","CONNOR","KIEL","NOAH","BECKETT","ZLATA",
   "ZAKHAR","ACACIA","ZACK","EILEEN","JOSHUA","STEVE","JORDYN","DANIKA"
 ];
+// Gentle exclusions (ALL CAPS)
 let gentleExclusions = ["ERON","EMERSON","ACACIA","MANINDER"];
 
+// State
 let pool = [...names];
-let gentleMode = false;
-let noRepeats = true;
+let gentleMode = false; // G toggles
+let noRepeats = true;   // N toggles (when false => repeats ON, show 🔁)
 
+// Elements
 const stage = document.getElementById("main");
 const nameDisplay = document.getElementById("name-display");
+const repeatsIndicator = document.getElementById("repeats-indicator");
 const resetBtn = document.getElementById("reset");
-const toggleRepeatsBtn = document.getElementById("toggle-repeats");
 const editor = document.getElementById("editor");
 const namesInput = document.getElementById("names-input");
 const gentleInput = document.getElementById("gentle-input");
 const saveBtn = document.getElementById("save");
 const gentleIndicator = document.getElementById("gentle-indicator");
 
+// Animation
 function animateFlip() {
   nameDisplay.classList.remove("flip");
-  void nameDisplay.offsetWidth;
+  void nameDisplay.offsetWidth; // restart CSS animation
   nameDisplay.classList.add("flip");
 }
 
+// Pick a name
 function pick() {
   let base = noRepeats ? pool : names.slice();
   if (gentleMode) base = base.filter(n => !gentleExclusions.includes(n));
@@ -42,28 +47,23 @@ function pick() {
   }
 }
 
+// Helpers
 function reset() {
   pool = [...names];
   nameDisplay.textContent = "Click or press SPACE";
 }
-
 function toggleGentle() {
   gentleMode = !gentleMode;
   gentleIndicator.classList.toggle("on", gentleMode);
 }
-
-function applyNoRepeatsUI() {
-  toggleRepeatsBtn.setAttribute("aria-pressed", String(noRepeats));
-  toggleRepeatsBtn.textContent = noRepeats ? "NO REPEATS" : "REPEATS ALLOWED";
-  toggleRepeatsBtn.style.transform = "scale(0.96)";
-  setTimeout(() => (toggleRepeatsBtn.style.transform = ""), 90);
+function updateRepeatsIndicator() {
+  // Show emoji only when repeats are ALLOWED (i.e., noRepeats = false)
+  repeatsIndicator.classList.toggle("on", !noRepeats);
 }
-
 function toggleNoRepeats() {
   noRepeats = !noRepeats;
-  applyNoRepeatsUI();
+  updateRepeatsIndicator();
 }
-
 function saveLists() {
   names = namesInput.value.split(/[\n,]/).map(s => s.trim()).filter(Boolean).map(s => s.toUpperCase());
   gentleExclusions = gentleInput.value.split(/[\n,]/).map(s => s.trim()).filter(Boolean).map(s => s.toUpperCase());
@@ -71,13 +71,13 @@ function saveLists() {
   editor.classList.add("hidden");
 }
 
-applyNoRepeatsUI();
+// Init
 reset();
+updateRepeatsIndicator();
 
 // Events
 stage.addEventListener("click", pick);
 resetBtn.addEventListener("click", e => { e.stopPropagation(); reset(); });
-toggleRepeatsBtn.addEventListener("click", e => { e.stopPropagation(); toggleNoRepeats(); });
 saveBtn.addEventListener("click", e => { e.stopPropagation(); saveLists(); });
 editor.addEventListener("click", e => e.stopPropagation());
 
