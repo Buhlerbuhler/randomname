@@ -7,12 +7,16 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Gentle Mode indicator -->
+  <!-- Gentle Mode emoji (shows when ON via G) -->
   <div id="gentle-indicator" aria-hidden="true">🦅</div>
 
-  <!-- Clickable main area -->
+  <!-- Clickable stage -->
   <main id="main">
-    <div id="name-display">Click or press SPACE</div>
+    <div class="stage-inner">
+      <div id="name-display">Click or press SPACE</div>
+      <!-- Repeats indicator (shows when repeats are ON) -->
+      <div id="repeats-indicator" aria-hidden="true">🔁</div>
+    </div>
   </main>
 
   <!-- Hidden editor (E toggles) -->
@@ -24,12 +28,9 @@
     <button id="save">Save</button>
   </section>
 
-  <!-- Footer with Reset center & No Repeats right -->
+  <!-- Footer with only Reset -->
   <footer>
     <button id="reset">RESET</button>
-    <button id="toggle-repeats" aria-pressed="true" title="Toggle No-Repeats (N)">
-      NO REPEATS
-    </button>
   </footer>
 
   <script src="script.js"></script>
