@@ -13,10 +13,12 @@ let gentleMode = false;
 
 const nameDisplay = document.getElementById("name-display");
 const pickBtn = document.getElementById("pick");
+const resetBtn = document.getElementById("reset");
 const editor = document.getElementById("editor");
 const namesInput = document.getElementById("names-input");
 const gentleInput = document.getElementById("gentle-input");
 const saveBtn = document.getElementById("save");
+const gentleIndicator = document.getElementById("gentle-indicator");
 
 function pick() {
   let source = pool;
@@ -42,6 +44,7 @@ function reset() {
 
 function toggleGentle() {
   gentleMode = !gentleMode;
+  gentleIndicator.classList.toggle("on", gentleMode);
 }
 
 function saveLists() {
@@ -52,6 +55,7 @@ function saveLists() {
 }
 
 pickBtn.onclick = pick;
+resetBtn.onclick = reset;
 saveBtn.onclick = saveLists;
 
 document.body.addEventListener("keydown", e => {
@@ -66,5 +70,5 @@ document.body.addEventListener("keydown", e => {
 });
 
 document.body.onclick = e => {
-  if (!editor.contains(e.target) && e.target !== pickBtn) pick();
+  if (!editor.contains(e.target) && e.target !== pickBtn && e.target !== resetBtn) pick();
 };
