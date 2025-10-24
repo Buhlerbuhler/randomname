@@ -1,4 +1,4 @@
-// Default class list (from your project)
+// Default class list
 let names = [
   "Eunice","Danikah","Japdeep","Katelyn","Emerson","Hayley","Benjamin","Dalia","Lena",
   "Maninder","Serena","Laila","Eron","Connor","Kiel","Noah","Beckett","Zlata",
@@ -11,39 +11,42 @@ let gentleExclusions = ["Eron", "Emerson", "Acacia", "Maninder"];
 // State
 let pool = [...names];
 let gentleMode = false;
-let noRepeats = true; // <-- N toggles this
+let noRepeats = true;  // toggled by button (and N key)
 
-// Elements
 const nameDisplay = document.getElementById("name-display");
 const resetBtn = document.getElementById("reset");
+const toggleRepeatsBtn = document.getElementById("toggle-repeats");
 const editor = document.getElementById("editor");
 const namesInput = document.getElementById("names-input");
 const gentleInput = document.getElementById("gentle-input");
 const saveBtn = document.getElementById("save");
 const gentleIndicator = document.getElementById("gentle-indicator");
 
-// Core logic
-function pick() {
-  // Choose base source by repeats mode
-  let base = noRepeats ? pool : names.slice();
+function animateFlip() {
+  nameDisplay.classList.remove("flip");
+  // Force reflow so the animation can restart
+  // eslint-disable-next-line no-unused-expressions
+  nameDisplay.offsetWidth;
+  nameDisplay.classList.add("flip");
+}
 
-  // Apply Gentle filter if needed
+function pick() {
+  // Base source (repeats vs bag)
+  let base = noRepeats ? pool : names.slice();
+  // Apply gentle filter if needed
   if (gentleMode) base = base.filter(n => !gentleExclusions.includes(n));
 
-  // Guard: if empty, message
   if (!base.length) {
     nameDisplay.textContent = "Reset to start again";
     return;
   }
 
-  // Choose and display
   const i = Math.floor(Math.random() * base.length);
   const chosen = base[i];
   nameDisplay.textContent = chosen;
-  nameDisplay.classList.add("pop");
-  setTimeout(() => nameDisplay.classList.remove("pop"), 150);
+  animateFlip();
 
-  // Remove from bag only in no-repeats mode
+  // Remove from bag only if no-repeats
   if (noRepeats) {
     const realIndex = pool.indexOf(chosen);
     if (realIndex !== -1) pool.splice(realIndex, 1);
@@ -60,14 +63,14 @@ function toggleGentle() {
   gentleIndicator.classList.toggle("on", gentleMode);
 }
 
+function applyNoRepeatsUI() {
+  toggleRepeatsBtn.setAttribute("aria-pressed", String(noRepeats));
+  toggleRepeatsBtn.textContent = noRepeats ? "NO REPEATS" : "REPEATS ALLOWED";
+}
+
 function toggleNoRepeats() {
   noRepeats = !noRepeats;
-  // When switching back to no-repeats, rebuild the bag from remaining names
-  if (noRepeats) {
-    // keep the current pool as-is (already shrunk)
-  } else {
-    // repeats mode: nothing to maintain
-  }
+  applyNoRepeatsUI();
 }
 
 function saveLists() {
@@ -77,14 +80,16 @@ function saveLists() {
   editor.classList.add("hidden");
 }
 
+// Init UI
+applyNoRepeatsUI();
+
 // Events
-resetBtn.onclick = reset;
-saveBtn.onclick = saveLists;
+resetBtn.onclick = (e) => { e.stopPropagation(); reset(); };
+toggleRepeatsBtn.onclick = (e) => { e.stopPropagation(); toggleNoRepeats(); };
+saveBtn.onclick = (e) => { e.stopPropagation(); saveLists(); };
 
 document.body.addEventListener("keydown", e => {
-  // Avoid typing inside textareas triggering picks
   const isTyping = e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT";
-
   if (e.key === " " && !isTyping) { e.preventDefault(); pick(); }
   if (e.key.toLowerCase() === "e") {
     editor.classList.toggle("hidden");
@@ -94,13 +99,16 @@ document.body.addEventListener("keydown", e => {
     }
   }
   if (e.key.toLowerCase() === "g" && !isTyping) toggleGentle();
-  if (e.key.toLowerCase() === "n" && !isTyping) toggleNoRepeats();  // <-- repeats toggle
+  if (e.key.toLowerCase() === "n" && !isTyping) toggleNoRepeats();
   if (e.key.toLowerCase() === "r" && !isTyping) reset();
 });
 
-// Click anywhere to pick (except editor/reset)
+// Click anywhere to pick (ignore clicks on UI)
 document.body.addEventListener("click", e => {
-  const clickInsideEditor = editor.contains(e.target);
-  const isReset = e.target === resetBtn;
-  if (!clickInsideEditor && !isReset) pick();
+  const blocked =
+    editor.contains(e.target) ||
+    e.target === resetBtn ||
+    e.target === toggleRepeatsBtn ||
+    e.target === saveBtn;
+  if (!blocked) pick();
 });
