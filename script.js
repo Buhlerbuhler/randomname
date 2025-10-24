@@ -1,102 +1,77 @@
-body {
-  margin: 0;
-  background: linear-gradient(135deg, #5b21b6, #db2777, #ef4444);
-  background-size: 300% 300%;
-  animation: gradientShift 10s ease infinite;
-  color: white;
-  font-family: "Poppins", sans-serif;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
+// Default class list
+let names = [
+  "Eunice","Danikah","Japdeep","Katelyn","Emerson","Hayley","Benjamin","Dalia","Lena",
+  "Maninder","Serena","Laila","Eron","Connor","Kiel","Noah","Beckett","Zlata",
+  "Zakhar","Acacia","Zack","Eileen","Joshua","Steve","Jordyn","Danika"
+];
+
+// Gentle exclusion list (students to skip when Gentle Mode is ON)
+let gentleExclusions = ["Eron", "Emerson", "Acacia", "Maninder"];
+
+let pool = [...names];
+let gentleMode = false;
+
+const nameDisplay = document.getElementById("name-display");
+const pickBtn = document.getElementById("pick");
+const editBtn = document.getElementById("edit");
+const gentleBtn = document.getElementById("gentle");
+const resetBtn = document.getElementById("reset");
+const editor = document.getElementById("editor");
+const namesInput = document.getElementById("names-input");
+const gentleInput = document.getElementById("gentle-input");
+const saveBtn = document.getElementById("save");
+
+function pick() {
+  let source = pool;
+  if (gentleMode) {
+    source = source.filter(n => !gentleExclusions.includes(n));
+  }
+  if (!source.length) {
+    nameDisplay.textContent = "Reset to start again";
+    return;
+  }
+  const i = Math.floor(Math.random() * source.length);
+  const chosen = source[i];
+  nameDisplay.textContent = chosen;
+  nameDisplay.classList.add("pop");
+  setTimeout(() => nameDisplay.classList.remove("pop"), 150);
+  pool.splice(pool.indexOf(chosen), 1);
 }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+function reset() {
+  pool = [...names];
+  nameDisplay.textContent = "Click anywhere";
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
+function toggleGentle() {
+  gentleMode = !gentleMode;
+  gentleBtn.textContent = `Gentle: ${gentleMode ? "ON" : "OFF"}`;
 }
 
-h1 {
-  font-weight: 800;
-  font-size: 1.5rem;
+function saveLists() {
+  names = namesInput.value.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+  gentleExclusions = gentleInput.value.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+  reset();
+  editor.classList.add("hidden");
 }
 
-.buttons button {
-  background: rgba(0, 0, 0, 0.3);
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  margin-left: 0.5rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.buttons button:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
+pickBtn.onclick = pick;
+resetBtn.onclick = reset;
+gentleBtn.onclick = toggleGentle;
+editBtn.onclick = () => {
+  editor.classList.toggle("hidden");
+  namesInput.value = names.join("\\n");
+  gentleInput.value = gentleExclusions.join("\\n");
+};
+saveBtn.onclick = saveLists;
 
-#main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  text-align: center;
-}
+document.body.addEventListener("keydown", e => {
+  if (e.key === " ") pick();
+  if (e.key.toLowerCase() === "e") editor.classList.toggle("hidden");
+  if (e.key.toLowerCase() === "g") toggleGentle();
+  if (e.key.toLowerCase() === "r") reset();
+});
 
-#name-display {
-  font-size: clamp(2rem, 10vw, 10rem);
-  font-weight: 900;
-  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-  transition: transform 0.15s ease;
-}
-#name-display.pop {
-  transform: scale(1.2);
-}
-
-#pick {
-  margin-top: 2rem;
-  padding: 1rem 2rem;
-  font-weight: 800;
-  font-size: 1.2rem;
-  background: white;
-  color: black;
-  border: none;
-  border-radius: 1rem;
-  cursor: pointer;
-}
-
-#editor {
-  background: rgba(0, 0, 0, 0.7);
-  padding: 1rem 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-#editor.hidden {
-  display: none;
-}
-textarea {
-  width: 100%;
-  height: 100px;
-  margin-bottom: 1rem;
-  border-radius: 0.5rem;
-  border: none;
-  padding: 0.5rem;
-  background: #333;
-  color: white;
-}
-
-footer {
-  text-align: center;
-  padding: 0.5rem;
-  opacity: 0.6;
-  font-size: 0.75rem;
-}
+document.body.onclick = e => {
+  if (!editor.contains(e.target) && e.target !== pickBtn && e.target !== editBtn) pick();
+};
