@@ -1,7 +1,19 @@
+:root {
+  --bg: #111827;
+  --panel: #0f172a;
+  --btn-fg: #000;
+  --btn-bg: #fff;
+  --btn-bg-muted: rgba(255,255,255,0.88);
+  --text: #fff;
+  --muted: rgba(255,255,255,0.12);
+}
+
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  background: #111827; /* solid background */
-  color: white;
+  background: var(--bg);
+  color: var(--text);
   font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   display: flex;
   flex-direction: column;
@@ -10,6 +22,7 @@ body {
   position: relative;
 }
 
+/* Gentle emoji top-center (hidden until ON) */
 #gentle-indicator {
   position: absolute;
   top: 0.75rem;
@@ -17,10 +30,28 @@ body {
   transform: translateX(-50%);
   opacity: 0;
   font-size: 1.5rem;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.25s ease;
   pointer-events: none;
 }
 #gentle-indicator.on { opacity: 0.85; }
+
+/* No-Repeats toggle top-right */
+#toggle-repeats {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border: none;
+  border-radius: 0.6rem;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+#toggle-repeats[aria-pressed="false"] {
+  background: var(--btn-bg-muted);
+}
 
 #main {
   flex: 1;
@@ -30,22 +61,34 @@ body {
   cursor: pointer;
   text-align: center;
   padding: 2rem;
+  /* perspective for 3D flip */
+  perspective: 1000px;
 }
 
 #name-display {
   font-size: clamp(2rem, 10vw, 10rem);
   font-weight: 900;
-  text-transform: uppercase;            /* <-- ALL CAPS */
+  text-transform: uppercase;     /* ALL CAPS */
   letter-spacing: 0.02em;
-  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-  transition: transform 0.15s ease;
+  /* no text-shadow */
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
 }
-#name-display.pop { transform: scale(1.2); }
+
+/* Flip animation on pick */
+@keyframes flipXIn {
+  0%   { transform: rotateX(90deg); opacity: 0; }
+  60%  { transform: rotateX(-10deg); opacity: 1; }
+  100% { transform: rotateX(0deg); opacity: 1; }
+}
+#name-display.flip {
+  animation: flipXIn 380ms cubic-bezier(.2,.7,.2,1);
+}
 
 #editor {
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0,0,0,0.8);
   padding: 1rem 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid var(--muted);
 }
 #editor.hidden { display: none; }
 textarea {
@@ -56,7 +99,7 @@ textarea {
   border: none;
   padding: 0.5rem;
   background: #333;
-  color: white;
+  color: var(--text);
   resize: vertical;
 }
 
@@ -64,14 +107,14 @@ footer {
   display: flex;
   justify-content: center;
   padding: 0.75rem;
-  background: #0f172a;
+  background: var(--panel);
 }
 #reset {
   padding: 0.5rem 1.2rem;
   border: none;
   border-radius: 0.6rem;
-  background: white;
-  color: black;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
   font-weight: 700;
   cursor: pointer;
 }
