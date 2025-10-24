@@ -1,4 +1,4 @@
-// Default class list
+// Default class list (from your project)
 let names = [
   "Eunice","Danikah","Japdeep","Katelyn","Emerson","Hayley","Benjamin","Dalia","Lena",
   "Maninder","Serena","Laila","Eron","Connor","Kiel","Noah","Beckett","Zlata",
@@ -8,11 +8,13 @@ let names = [
 // Gentle exclusion list
 let gentleExclusions = ["Eron", "Emerson", "Acacia", "Maninder"];
 
+// State
 let pool = [...names];
 let gentleMode = false;
+let noRepeats = true; // <-- N toggles this
 
+// Elements
 const nameDisplay = document.getElementById("name-display");
-const pickBtn = document.getElementById("pick");
 const resetBtn = document.getElementById("reset");
 const editor = document.getElementById("editor");
 const namesInput = document.getElementById("names-input");
@@ -20,21 +22,32 @@ const gentleInput = document.getElementById("gentle-input");
 const saveBtn = document.getElementById("save");
 const gentleIndicator = document.getElementById("gentle-indicator");
 
+// Core logic
 function pick() {
-  let source = pool;
-  if (gentleMode) {
-    source = source.filter(n => !gentleExclusions.includes(n));
-  }
-  if (!source.length) {
+  // Choose base source by repeats mode
+  let base = noRepeats ? pool : names.slice();
+
+  // Apply Gentle filter if needed
+  if (gentleMode) base = base.filter(n => !gentleExclusions.includes(n));
+
+  // Guard: if empty, message
+  if (!base.length) {
     nameDisplay.textContent = "Reset to start again";
     return;
   }
-  const i = Math.floor(Math.random() * source.length);
-  const chosen = source[i];
+
+  // Choose and display
+  const i = Math.floor(Math.random() * base.length);
+  const chosen = base[i];
   nameDisplay.textContent = chosen;
   nameDisplay.classList.add("pop");
   setTimeout(() => nameDisplay.classList.remove("pop"), 150);
-  pool.splice(pool.indexOf(chosen), 1);
+
+  // Remove from bag only in no-repeats mode
+  if (noRepeats) {
+    const realIndex = pool.indexOf(chosen);
+    if (realIndex !== -1) pool.splice(realIndex, 1);
+  }
 }
 
 function reset() {
@@ -47,6 +60,16 @@ function toggleGentle() {
   gentleIndicator.classList.toggle("on", gentleMode);
 }
 
+function toggleNoRepeats() {
+  noRepeats = !noRepeats;
+  // When switching back to no-repeats, rebuild the bag from remaining names
+  if (noRepeats) {
+    // keep the current pool as-is (already shrunk)
+  } else {
+    // repeats mode: nothing to maintain
+  }
+}
+
 function saveLists() {
   names = namesInput.value.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
   gentleExclusions = gentleInput.value.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
@@ -54,21 +77,30 @@ function saveLists() {
   editor.classList.add("hidden");
 }
 
-pickBtn.onclick = pick;
+// Events
 resetBtn.onclick = reset;
 saveBtn.onclick = saveLists;
 
 document.body.addEventListener("keydown", e => {
-  if (e.key === " ") pick();
+  // Avoid typing inside textareas triggering picks
+  const isTyping = e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT";
+
+  if (e.key === " " && !isTyping) { e.preventDefault(); pick(); }
   if (e.key.toLowerCase() === "e") {
     editor.classList.toggle("hidden");
-    namesInput.value = names.join("\\n");
-    gentleInput.value = gentleExclusions.join("\\n");
+    if (!editor.classList.contains("hidden")) {
+      namesInput.value = names.join("\n");
+      gentleInput.value = gentleExclusions.join("\n");
+    }
   }
-  if (e.key.toLowerCase() === "g") toggleGentle();
-  if (e.key.toLowerCase() === "r") reset();
+  if (e.key.toLowerCase() === "g" && !isTyping) toggleGentle();
+  if (e.key.toLowerCase() === "n" && !isTyping) toggleNoRepeats();  // <-- repeats toggle
+  if (e.key.toLowerCase() === "r" && !isTyping) reset();
 });
 
-document.body.onclick = e => {
-  if (!editor.contains(e.target) && e.target !== pickBtn && e.target !== resetBtn) pick();
-};
+// Click anywhere to pick (except editor/reset)
+document.body.addEventListener("click", e => {
+  const clickInsideEditor = editor.contains(e.target);
+  const isReset = e.target === resetBtn;
+  if (!clickInsideEditor && !isReset) pick();
+});
