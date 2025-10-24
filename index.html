@@ -2,19 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Random Name Picker</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <!-- Gentle Mode indicator (shows when ON) -->
+  <!-- Gentle Mode indicator (appears when ON) -->
   <div id="gentle-indicator" aria-hidden="true">🕊️</div>
+
+  <!-- No-Repeats toggle (top-right) -->
+  <button id="toggle-repeats" aria-pressed="true" title="Toggle No-Repeats (N)">
+    NO REPEATS
+  </button>
 
   <main id="main">
     <div id="name-display">Click or press SPACE</div>
   </main>
 
-  <!-- Hidden editor panel (E toggles) -->
+  <!-- Hidden editor (E toggles) -->
   <section id="editor" class="hidden" aria-label="Editor">
     <h2>Class List</h2>
     <textarea id="names-input" placeholder="Enter names, one per line..."></textarea>
