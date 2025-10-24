@@ -1,46 +1,12 @@
 body {
   margin: 0;
-  background: linear-gradient(135deg, #5b21b6, #db2777, #ef4444);
-  background-size: 300% 300%;
-  animation: gradientShift 10s ease infinite;
+  background: #111827; /* Solid deep gray-blue */
   color: white;
   font-family: "Poppins", sans-serif;
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-}
-
-h1 {
-  font-weight: 800;
-  font-size: 1.5rem;
-}
-
-.buttons button {
-  background: rgba(0, 0, 0, 0.3);
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  margin-left: 0.5rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.buttons button:hover {
-  background: rgba(255, 255, 255, 0.2);
 }
 
 #main {
@@ -76,7 +42,7 @@ h1 {
 }
 
 #editor {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   padding: 1rem 2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
