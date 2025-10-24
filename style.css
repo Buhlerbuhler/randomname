@@ -1,9 +1,9 @@
 :root {
-  --bg: #FB8B24;        /* vibrant orange background for entire page */
-  --btn-fg: #000;       /* button text color */
-  --btn-bg: #fff;       /* button background */
+  --bg: #FB8B24;        /* flat orange background */
+  --btn-fg: #000;
+  --btn-bg: #fff;
   --btn-bg-muted: rgba(255,255,255,0.88);
-  --text: #fff;         /* main text color */
+  --text: #fff;
   --muted: rgba(255,255,255,0.12);
 }
 
@@ -25,40 +25,10 @@ body {
   position: relative;
 }
 
-/* ===========================
-   Header (No Repeats button)
-   =========================== */
-#topbar {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0.5rem;
-  background: var(--bg);       /* match body color */
-  position: relative;
-  z-index: 1000;
-}
-
-#toggle-repeats {
-  padding: 0.45rem 0.8rem;
-  border: none;
-  border-radius: 0.6rem;
-  background: var(--btn-bg);
-  color: var(--btn-fg);
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: transform 0.1s ease, background 0.15s ease;
-}
-#toggle-repeats[aria-pressed="false"] {
-  background: var(--btn-bg-muted);
-}
-
-/* ===========================
-   Gentle Mode Emoji
-   =========================== */
+/* Gentle emoji top-center (hidden until ON) */
 #gentle-indicator {
   position: absolute;
-  top: 0.6rem;
+  top: 0.75rem;
   left: 50%;
   transform: translateX(-50%);
   opacity: 0;
@@ -71,9 +41,7 @@ body {
   opacity: 0.9;
 }
 
-/* ===========================
-   Main stage (clickable area)
-   =========================== */
+/* Main stage (clickable area) */
 #main {
   flex: 1;
   display: flex;
@@ -88,7 +56,7 @@ body {
 #name-display {
   font-size: clamp(2rem, 10vw, 10rem);
   font-weight: 900;
-  text-transform: uppercase;   /* ALL CAPS */
+  text-transform: uppercase; /* ALL CAPS */
   letter-spacing: 0.02em;
   transform-style: preserve-3d;
   backface-visibility: hidden;
@@ -104,9 +72,7 @@ body {
   animation: flipXIn 380ms cubic-bezier(.2,.7,.2,1);
 }
 
-/* ===========================
-   Editor (E toggles)
-   =========================== */
+/* Editor (E toggles) */
 #editor {
   background: rgba(0,0,0,0.8);
   padding: 1rem 2rem;
@@ -114,9 +80,7 @@ body {
   z-index: 1000;
   position: relative;
 }
-#editor.hidden {
-  display: none;
-}
+#editor.hidden { display: none; }
 
 #editor h2, #editor h3 {
   margin: 0.25rem 0 0.5rem;
@@ -145,14 +109,12 @@ textarea {
   cursor: pointer;
 }
 
-/* ===========================
-   Footer (Reset button)
-   =========================== */
+/* Footer (Reset button) */
 footer {
   display: flex;
   justify-content: center;
   padding: 0.75rem;
-  background: var(--bg);    /* same as body color */
+  background: var(--bg); /* match body */
   z-index: 1000;
   position: relative;
 }
