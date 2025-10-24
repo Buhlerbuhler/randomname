@@ -4,12 +4,16 @@ let names = [
   "Maninder","Serena","Laila","Eron","Connor","Kiel","Noah","Beckett","Zlata",
   "Zakhar","Acacia","Zack","Eileen","Joshua","Steve","Jordyn","Danika"
 ];
-let gentleExclusions = ["Eron","Emerson","Acacia","Maninder"];
 
+// Gentle exclusion list
+let gentleExclusions = ["Eron", "Emerson", "Acacia", "Maninder"];
+
+// State
 let pool = [...names];
 let gentleMode = false;
-let noRepeats = true;
+let noRepeats = true; // default mode
 
+// DOM elements
 const nameDisplay = document.getElementById("name-display");
 const resetBtn = document.getElementById("reset");
 const toggleRepeatsBtn = document.getElementById("toggle-repeats");
@@ -19,17 +23,22 @@ const gentleInput = document.getElementById("gentle-input");
 const saveBtn = document.getElementById("save");
 const gentleIndicator = document.getElementById("gentle-indicator");
 
+// ---------- Animation ----------
 function animateFlip() {
   nameDisplay.classList.remove("flip");
-  void nameDisplay.offsetWidth; // reflow
+  void nameDisplay.offsetWidth; // restart animation
   nameDisplay.classList.add("flip");
 }
 
+// ---------- Pick Logic ----------
 function pick() {
   let base = noRepeats ? pool : names.slice();
   if (gentleMode) base = base.filter(n => !gentleExclusions.includes(n));
 
-  if (!base.length) { nameDisplay.textContent = "Reset to start again"; return; }
+  if (!base.length) {
+    nameDisplay.textContent = "Reset to start again";
+    return;
+  }
 
   const i = Math.floor(Math.random() * base.length);
   const chosen = base[i];
@@ -38,10 +47,11 @@ function pick() {
 
   if (noRepeats) {
     const idx = pool.indexOf(chosen);
-    if (idx !== -1) pool.splice(idx,1);
+    if (idx !== -1) pool.splice(idx, 1);
   }
 }
 
+// ---------- Helpers ----------
 function reset() {
   pool = [...names];
   nameDisplay.textContent = "Click or press SPACE";
@@ -55,6 +65,8 @@ function toggleGentle() {
 function applyNoRepeatsUI() {
   toggleRepeatsBtn.setAttribute("aria-pressed", String(noRepeats));
   toggleRepeatsBtn.textContent = noRepeats ? "NO REPEATS" : "REPEATS ALLOWED";
+  toggleRepeatsBtn.style.transform = "scale(0.96)";
+  setTimeout(() => (toggleRepeatsBtn.style.transform = ""), 90);
 }
 
 function toggleNoRepeats() {
@@ -63,20 +75,33 @@ function toggleNoRepeats() {
 }
 
 function saveLists() {
-  names = namesInput.value.split(/[\n,]/).map(s=>s.trim()).filter(Boolean);
-  gentleExclusions = gentleInput.value.split(/[\n,]/).map(s=>s.trim()).filter(Boolean);
-  reset(); editor.classList.add("hidden");
+  names = namesInput.value.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+  gentleExclusions = gentleInput.value.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+  reset();
+  editor.classList.add("hidden");
 }
 
+// ---------- Init ----------
 applyNoRepeatsUI();
 
-// Event wiring
-resetBtn.addEventListener("click", e => { e.stopPropagation(); reset(); });
-toggleRepeatsBtn.addEventListener("click", e => { e.stopPropagation(); toggleNoRepeats(); });
-saveBtn.addEventListener("click", e => { e.stopPropagation(); saveLists(); });
+// ---------- Event Listeners ----------
+resetBtn.addEventListener("click", e => {
+  e.stopPropagation();
+  reset();
+});
+
+toggleRepeatsBtn.addEventListener("click", e => {
+  e.stopPropagation();
+  toggleNoRepeats();
+});
+
+saveBtn.addEventListener("click", e => {
+  e.stopPropagation();
+  saveLists();
+});
 
 document.body.addEventListener("keydown", e => {
-  const isTyping = ["TEXTAREA","INPUT"].includes(e.target.tagName);
+  const isTyping = ["TEXTAREA", "INPUT"].includes(e.target.tagName);
   if (e.key === " " && !isTyping) { e.preventDefault(); pick(); }
   if (e.key.toLowerCase() === "e") {
     editor.classList.toggle("hidden");
@@ -90,8 +115,12 @@ document.body.addEventListener("keydown", e => {
   if (e.key.toLowerCase() === "r" && !isTyping) reset();
 });
 
+// click anywhere except UI to pick
 document.body.addEventListener("click", e => {
-  const blocked = editor.contains(e.target) || e.target === resetBtn ||
-                  e.target === toggleRepeatsBtn || e.target === saveBtn;
+  const blocked =
+    e.target.closest("#toggle-repeats") ||
+    e.target.closest("#reset") ||
+    e.target.closest("#save") ||
+    editor.contains(e.target);
   if (!blocked) pick();
 });
