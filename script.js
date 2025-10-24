@@ -5,7 +5,7 @@ let names = [
   "Zakhar","Acacia","Zack","Eileen","Joshua","Steve","Jordyn","Danika"
 ];
 
-// Gentle exclusion list (students to skip when Gentle Mode is ON)
+// Gentle exclusion list
 let gentleExclusions = ["Eron", "Emerson", "Acacia", "Maninder"];
 
 let pool = [...names];
@@ -13,9 +13,6 @@ let gentleMode = false;
 
 const nameDisplay = document.getElementById("name-display");
 const pickBtn = document.getElementById("pick");
-const editBtn = document.getElementById("edit");
-const gentleBtn = document.getElementById("gentle");
-const resetBtn = document.getElementById("reset");
 const editor = document.getElementById("editor");
 const namesInput = document.getElementById("names-input");
 const gentleInput = document.getElementById("gentle-input");
@@ -40,12 +37,11 @@ function pick() {
 
 function reset() {
   pool = [...names];
-  nameDisplay.textContent = "Click anywhere";
+  nameDisplay.textContent = "Click or press SPACE";
 }
 
 function toggleGentle() {
   gentleMode = !gentleMode;
-  gentleBtn.textContent = `Gentle: ${gentleMode ? "ON" : "OFF"}`;
 }
 
 function saveLists() {
@@ -56,22 +52,19 @@ function saveLists() {
 }
 
 pickBtn.onclick = pick;
-resetBtn.onclick = reset;
-gentleBtn.onclick = toggleGentle;
-editBtn.onclick = () => {
-  editor.classList.toggle("hidden");
-  namesInput.value = names.join("\\n");
-  gentleInput.value = gentleExclusions.join("\\n");
-};
 saveBtn.onclick = saveLists;
 
 document.body.addEventListener("keydown", e => {
   if (e.key === " ") pick();
-  if (e.key.toLowerCase() === "e") editor.classList.toggle("hidden");
+  if (e.key.toLowerCase() === "e") {
+    editor.classList.toggle("hidden");
+    namesInput.value = names.join("\\n");
+    gentleInput.value = gentleExclusions.join("\\n");
+  }
   if (e.key.toLowerCase() === "g") toggleGentle();
   if (e.key.toLowerCase() === "r") reset();
 });
 
 document.body.onclick = e => {
-  if (!editor.contains(e.target) && e.target !== pickBtn && e.target !== editBtn) pick();
+  if (!editor.contains(e.target) && e.target !== pickBtn) pick();
 };
