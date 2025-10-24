@@ -7,14 +7,15 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="gentle-indicator">🕊️</div>
+  <!-- Gentle Mode indicator (shows when ON) -->
+  <div id="gentle-indicator" aria-hidden="true">🕊️</div>
 
   <main id="main">
     <div id="name-display">Click or press SPACE</div>
-    <button id="pick">PICK</button>
   </main>
 
-  <section id="editor" class="hidden">
+  <!-- Hidden editor panel (E toggles) -->
+  <section id="editor" class="hidden" aria-label="Editor">
     <h2>Class List</h2>
     <textarea id="names-input" placeholder="Enter names, one per line..."></textarea>
     <h3>Gentle Exclusions (optional)</h3>
