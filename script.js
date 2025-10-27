@@ -5,7 +5,7 @@ let names = [
   "ZAKHAR","ACACIA","ZACK","EILEEN","JOSHUA","STEVE","JORDYN","DANIKA"
 ];
 // Gentle exclusions (ALL CAPS)
-let gentleExclusions = ["ERON","EMERSON","ACACIA","MANINDER"];
+let gentleExclusions = ["ERON","EMERSON","ACACIA","MANINDER","DANIKA"];
 
 // State
 let pool = [...names];
