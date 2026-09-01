@@ -1,11 +1,12 @@
 // Default names (ALL CAPS)
 let names = [
-  "EUNICE","DANIKAH","JAPDEEP","KATELYN","EMERSON","HAYLEY","BENJAMIN","DALIA","LENA",
-  "MANINDER","SERENA","LAILA","ERON","CONNOR","KIEL","NOAH","BECKETT","ZLATA",
-  "ZAKHAR","ACACIA","ZACK","EILEEN","JOSHUA","STEVE","JORDYN","DANIKA"
+  "ANELEIGH", "ZANDER", "JOSIE", "ELLIOT", "HANNAH", "ARIANNA",
+  "SIENNA", "IVY", "JORDYN", "ETHNE", "MARREX", "BELLA",
+  "NORAH", "BERKELEY", "FINLEY", "HARPER", "COHEN", "CROSBY",
+  "BRISTOL", "MAX", "THOMAS", "BRENT", "MILAN", "ALEXANDRA"
 ];
 // Gentle exclusions (ALL CAPS)
-let gentleExclusions = ["ERON","EMERSON","ACACIA","MANINDER","DANIKA"];
+let gentleExclusions = ["ANELEIGH", "BELLA"];
 
 // State
 let pool = [...names];
