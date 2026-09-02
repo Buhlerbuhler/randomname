@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Random Name Picker</title>
+
+  <style>
+    :root {
+      --bg: #000000;
+      --btn-fg: #000;
+      --btn-bg: #fff;
+      --text: #fff;
+      --muted: rgba(255, 255, 255, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Gentle mode indicator */
+    #gentle-indicator {
+      position: absolute;
+      top: 0.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      font-size: 1.5rem;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    #gentle-indicator.on {
+      opacity: 0.9;
+    }
+
+    /* Main clickable stage */
+    #main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      text-align: center;
+      padding: 2rem;
+      perspective: 1000px;
+      min-height: 0;
+    }
+
+    .stage-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #name-display {
+      font-size: clamp(2rem, 10vw, 10rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      line-height: 1;
+    }
+
+    /* Repeats indicator */
+    #repeats-indicator {
+      margin-top: 0.6rem;
+      font-size: 1.6rem;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    #repeats-indicator.on {
+      opacity: 0.95;
+    }
+
+    /* Flip animation */
+    @keyframes flipXIn {
+      0% {
+        transform: rotateX(90deg);
+        opacity: 0;
+      }
+
+      60% {
+        transform: rotateX(-10deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: rotateX(0deg);
+        opacity: 1;
+      }
+    }
+
+    #name-display.flip {
+      animation: flipXIn 380ms cubic-bezier(.2, .7, .2, 1);
+    }
+
+    /* Editor */
+    #editor {
+      background: rgba(0, 0, 0, 0.92);
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--muted);
+      z-index: 1000;
+      position: relative;
+      max-height: 65vh;
+      overflow-y: auto;
+    }
+
+    #editor.hidden {
+      display: none;
+    }
+
+    #editor h2,
+    #editor h3 {
+      margin: 0.25rem 0 0.5rem;
+      font-weight: 700;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      padding: 0.75rem;
+      background: #333;
+      color: var(--text);
+      resize: vertical;
+      font: inherit;
+    }
+
+    #save {
+      padding: 0.5rem 1.2rem;
+      border: none;
+      border-radius: 0.6rem;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Footer */
+    footer {
+      display: flex;
+      justify-content: center;
+      padding: 0.75rem;
+      background: var(--bg);
+      z-index: 1000;
+      position: relative;
+    }
+
+    #reset {
+      padding: 0.5rem 1.2rem;
+      border: none;
+      border-radius: 0.6rem;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Gentle Mode emoji -->
+  <div id="gentle-indicator" aria-hidden="true">🦅</div>
+
+  <!-- Clickable stage -->
+  <main id="main">
+    <div class="stage-inner">
+      <div id="name-display">Click or press SPACE</div>
+
+      <!-- Repeats indicator -->
+      <div id="repeats-indicator" aria-hidden="true">♾</div>
+    </div>
+  </main>
+
+  <!-- Hidden editor -->
+  <section id="editor" class="hidden" aria-label="Editor">
+    <h2>Class List</h2>
+    <textarea id="names-input"></textarea>
+
+    <h3>Gentle Exclusions (optional)</h3>
+    <textarea id="gentle-input"></textarea>
+
+    <button id="save">Save</button>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <button id="reset">RESET</button>
+  </footer>
+
+  <script>
+    // Default names
+    let names = [
+      "ANELEIGH",
+      "ZANDER",
+      "JOSIE",
+      "ELLIOT",
+      "HANNAH",
+      "ARIANNA",
+      "SIENNA",
+      "IVY",
+      "JORDYN",
+      "ETHNE",
+      "MARREX",
+      "BELLA",
+      "NORAH",
+      "BERKELEY",
+      "FINLEY",
+      "HARPER",
+      "COHEN",
+      "CROSBY",
+      "BRISTOL",
+      "MAX",
+      "THOMAS",
+      "BRENT",
+      "MILAN",
+      "ALEXANDRA"
+    ];
+
+    // Gentle exclusions
+    let gentleExclusions = [
+      "ANELEIGH",
+      "BELLA"
+    ];
+
+    // State
+    let pool = [...names];
+    let gentleMode = false;
+    let noRepeats = true;
+
+    // Elements
+    const stage = document.getElementById("main");
+    const nameDisplay = document.getElementById("name-display");
+    const repeatsIndicator = document.getElementById("repeats-indicator");
+    const resetBtn = document.getElementById("reset");
+    const editor = document.getElementById("editor");
+    const namesInput = document.getElementById("names-input");
+    const gentleInput = document.getElementById("gentle-input");
+    const saveBtn = document.getElementById("save");
+    const gentleIndicator = document.getElementById("gentle-indicator");
+
+    // Animation
+    function animateFlip() {
+      nameDisplay.classList.remove("flip");
+
+      // Force browser reflow so animation restarts
+      void nameDisplay.offsetWidth;
+
+      nameDisplay.classList.add("flip");
+    }
+
+    // Pick a random name
+    function pick() {
+      let base = noRepeats ? pool : names.slice();
+
+      if (gentleMode) {
+        base = base.filter(
+          name => !gentleExclusions.includes(name)
+        );
+      }
+
+      if (!base.length) {
+        nameDisplay.textContent = "Reset to start again";
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * base.length);
+      const chosen = base[randomIndex];
+
+      nameDisplay.textContent = chosen;
+      animateFlip();
+
+      if (noRepeats) {
+        const poolIndex = pool.indexOf(chosen);
+
+        if (poolIndex !== -1) {
+          pool.splice(poolIndex, 1);
+        }
+      }
+    }
+
+    // Reset available names
+    function reset() {
+      pool = [...names];
+      nameDisplay.textContent = "Click or press SPACE";
+    }
+
+    // Toggle gentle mode
+    function toggleGentle() {
+      gentleMode = !gentleMode;
+      gentleIndicator.classList.toggle("on", gentleMode);
+    }
+
+    // Update repeat indicator
+    function updateRepeatsIndicator() {
+      repeatsIndicator.classList.toggle("on", !noRepeats);
+    }
+
+    // Toggle repeat behaviour
+    function toggleNoRepeats() {
+      noRepeats = !noRepeats;
+      updateRepeatsIndicator();
+    }
+
+    // Save edited lists
+    function saveLists() {
+      names = namesInput.value
+        .split(/[\n,]/)
+        .map(name => name.trim())
+        .filter(Boolean)
+        .map(name => name.toUpperCase());
+
+      gentleExclusions = gentleInput.value
+        .split(/[\n,]/)
+        .map(name => name.trim())
+        .filter(Boolean)
+        .map(name => name.toUpperCase());
+
+      reset();
+      editor.classList.add("hidden");
+    }
+
+    // Initial setup
+    reset();
+    updateRepeatsIndicator();
+
+    // Click stage to pick
+    stage.addEventListener("click", pick);
+
+    // Reset button
+    resetBtn.addEventListener("click", event => {
+      event.stopPropagation();
+      reset();
+    });
+
+    // Save editor
+    saveBtn.addEventListener("click", event => {
+      event.stopPropagation();
+      saveLists();
+    });
+
+    // Prevent editor clicks from picking a name
+    editor.addEventListener("click", event => {
+      event.stopPropagation();
+    });
+
+    // Keyboard controls
+    document.addEventListener("keydown", event => {
+      const isTyping =
+        event.target.tagName === "TEXTAREA" ||
+        event.target.tagName === "INPUT";
+
+      // SPACE = pick
+      if (event.key === " " && !isTyping) {
+        event.preventDefault();
+        pick();
+      }
+
+      // E = editor
+      if (event.key.toLowerCase() === "e" && !isTyping) {
+        editor.classList.toggle("hidden");
+
+        if (!editor.classList.contains("hidden")) {
+          namesInput.value = names.join("\n");
+          gentleInput.value = gentleExclusions.join("\n");
+        }
+      }
+
+      // G = gentle mode
+      if (event.key.toLowerCase() === "g" && !isTyping) {
+        toggleGentle();
+      }
+
+      // N = toggle repeats
+      if (event.key.toLowerCase() === "n" && !isTyping) {
+        toggleNoRepeats();
+      }
+
+      // R = reset
+      if (event.key.toLowerCase() === "r" && !isTyping) {
+        reset();
+      }
+    });
+  </script>
+
+</body>
+</html>
